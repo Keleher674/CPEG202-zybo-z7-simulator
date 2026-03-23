@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1774224497" />
-    <testcase name="run_visualizer" classname="board_sim" file="/mnt/c/Users/keleh/Downloads/202_Simulation/board_sim.py" lineno="88" time="11.125927686691284" sim_time_ns="6760000.0" ratio_time="607589.7840039209" />
-  </testsuite>
-</testsuites>
