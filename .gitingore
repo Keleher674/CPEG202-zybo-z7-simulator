@@ -1,0 +1,18 @@
+# Python Caches and Environments
+__pycache__/
+*.py[cod]
+*$py.class
+wsl_venv/
+venv/
+env/
+
+# Cocotb and GHDL Build Artifacts
+sim_build/
+*.cf
+*.o
+*.vcd
+*.ghw
+
+# OS Generated Files
+.DS_Store
+Thumbs.db

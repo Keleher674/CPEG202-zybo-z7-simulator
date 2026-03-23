@@ -1,0 +1,7 @@
+v 4
+file / "/mnt/c/Users/keleh/Downloads/202_Simulation/src/main_board_top.vhd" "1535943e5647f049763834f6a44a302d7db4afba" "20260323000816.989":
+  entity switch_led at 1( 0) + 0 on 11;
+  architecture structural of switch_led at 16( 399) + 0 on 12;
+file / "/mnt/c/Users/keleh/Downloads/202_Simulation/src/random_logic.vhd" "f47aca7199effd845718deac975e03e200ebbd3c" "20260323000816.989":
+  entity my_blinker at 1( 0) + 0 on 13;
+  architecture behavior of my_blinker at 13( 242) + 0 on 14;
