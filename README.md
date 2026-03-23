@@ -2,6 +2,27 @@
 
 This project is a virtual hardware simulator for the Digilent Zybo Z7-10 FPGA board. It allows you to write, compile, and visually test your VHDL designs using a Python/Pygame frontend powered by Cocotb and GHDL. This fully replaces the need for physical hardware during the development and verification phases.
 
+## Windows Setup Prerequisites (WSL & VSCode)
+
+Because GHDL and Cocotb operate best in a Linux environment, Windows users must run this simulator using the Windows Subsystem for Linux (WSL). Windows 11 natively supports Linux GUI applications (WSLg), allowing the Pygame window to seamlessly appear on your Windows desktop.
+
+**Required Software:**
+1. **WSL (Ubuntu):** Installed via PowerShell (`wsl --install`).
+2. **Visual Studio Code:** Installed on Windows.
+3. **WSL Extension for VSCode:** Installed inside VSCode to bridge the environments.
+4. **Linux Packages:** Installed via the WSL Ubuntu terminal:
+   * `ghdl` (The VHDL compiler)
+   * `python3` and `python3-pip`
+5. **Python Packages:** Installed via pip in WSL:
+   * `cocotb`
+   * `pygame`
+
+**Workflow:**
+1. Open Ubuntu (WSL).
+2. Navigate to your project folder.
+3. Type `code .` to open the directory in VSCode.
+4. Open the integrated VSCode terminal (which is now running Linux) and execute `python3 run_sim.py`.
+
 ## Project Structure
 
 * `src/`: **All of your VHDL code goes here.** The simulator will *only* read files placed inside this directory. You can have as many `.vhd` files as you need.

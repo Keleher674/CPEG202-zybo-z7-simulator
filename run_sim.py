@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 from cocotb_tools.runner import get_runner
 
+# Suppress INFO and WARNING messages in the terminal
+os.environ["COCOTB_LOG_LEVEL"] = "ERROR"
+
 def main():
     sim = os.getenv("SIM", "ghdl")
     runner = get_runner(sim)
@@ -15,7 +18,7 @@ def main():
         return
 
     # 2. Define the exact name of the top-level entity
-    top_level_entity = "main" 
+    top_level_entity = "top_level" 
 
     # 3. Build the simulation (Compiles all files together)
     runner.build(
