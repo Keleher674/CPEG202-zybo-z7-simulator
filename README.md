@@ -42,9 +42,9 @@ The simulator reads your VHDL ports based on their names. You can write them as 
 | **Clock** | `clk` | N/A | 125 MHz system clock. |
 | **Switches** | `sw0` to `sw7` | `sw` | Slide switches. |
 | **Buttons** | `btn0` to `btn3` | `btn` | Momentary push buttons. |
-| **Green LEDs** | `led0` to `led3` | `led` | LEDs directly above the buttons. |
-| **Red LEDs** | `led4` to `led7` | `led` | LEDs near the switches. |
-| **7-Segment** | `seg0` to `seg7` | `seg` | Individual segments (`seg7` is the decimal). |
+| **Green LEDs** | `led0` to `led3` | `led` | LEDs near onboard switches. |
+| **Red LEDs** | `led4` to `led7` | `led` | LEDs to the right of the SSD. |
+| **7-Segment** | `seg0` to `seg7` | `seg` | Individual segments (`seg7` is the decimal point). |
 | **Digit Select** | `cat` | N/A | Multiplexer bit. `0` = Left digit, `1` = Right digit. |
 
 
