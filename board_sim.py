@@ -1,6 +1,7 @@
 import cocotb
 from cocotb.triggers import Timer
 from cocotb.clock import Clock
+from cocotb.utils import get_sim_time
 import pygame
 import sys
 import re
@@ -88,13 +89,20 @@ SEG_B = [
 @cocotb.test()
 async def run_visualizer(dut):
     # START CLOCK COROUTINE
-    # 125 MHz = 8 ns period. We check for common Zybo clock names.
     if hasattr(dut, "clk"):
         cocotb.start_soon(Clock(dut.clk, 8, unit="ns").start())
     elif hasattr(dut, "sysclk"):
         cocotb.start_soon(Clock(dut.sysclk, 8, unit="ns").start())
 
     pygame_clock = pygame.time.Clock()
+    
+    # POV (Persistence of Vision) Tracking Variables
+    last_cat_flip_time = 0
+    last_cat_val = 0
+    pov_active = False
+    seg_memory_A = 0 # Latched state for Left Digit (cat_val == 0)
+    seg_memory_B = 0 # Latched state for Right Digit (cat_val == 1)
+
     running = True
     
     while running:
@@ -140,7 +148,6 @@ async def run_visualizer(dut):
                 except Exception: pass
 
         # C. Advance VHDL Simulation
-        # Instead of 1 massive jump, we take small steps and yield control back to Pygame frequently
         await Timer(10, unit="us")
 
         # D. Read Outputs from VHDL
@@ -158,6 +165,7 @@ async def run_visualizer(dut):
             try: cat_val = 1 if str(dut.cat.value) == '1' else 0
             except Exception: pass
 
+        # Process LEDs
         for led in LEDS:
             idx = get_bit_index(led["name"])
             scalar_name = f"led{idx}"
@@ -167,27 +175,57 @@ async def run_visualizer(dut):
             elif hasattr(dut, "led"):
                 led["state"] = (led_int >> idx) & 1
 
+        # Resolve the current 8-bit segment state from either scalars or vectors
+        current_seg_state = 0
+        for i in range(8):
+            scalar_name = f"seg{i}"
+            state = 0
+            if hasattr(dut, scalar_name):
+                try: state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
+                except Exception: pass
+            elif hasattr(dut, "seg"):
+                state = (seg_int >> i) & 1
+            current_seg_state |= (state << i)
+
+        # POV Timing Logic
+        current_time = get_sim_time('ns')
+        if cat_val != last_cat_val:
+            delta = current_time - last_cat_flip_time
+            last_cat_flip_time = current_time
+            last_cat_val = cat_val
+            
+            # If cat flips faster than 10ms (10,000,000 ns), engage POV
+            if delta < 10000000:
+                pov_active = True
+            else:
+                pov_active = False
+
+        # Latch segment states into memory based on active digit
+        if cat_val == 0:
+            seg_memory_A = current_seg_state
+        elif cat_val == 1:
+            seg_memory_B = current_seg_state
+
+        # Apply states to SEG_A (Left Digit)
         for seg in SEG_A:
             idx = get_bit_index(seg["name"])
-            scalar_name = f"seg{idx}"
-            state = 0
-            if hasattr(dut, scalar_name):
-                try: state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
-                except Exception: pass
-            elif hasattr(dut, "seg"):
-                state = (seg_int >> idx) & 1
-            seg["state"] = 1 if (state == 1 and cat_val == 0) else 0
+            if pov_active:
+                # Use latched memory if POV is active
+                seg["state"] = (seg_memory_A >> idx) & 1
+            else:
+                # Normal slow behavior
+                seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 0) else 0
 
+        # Apply states to SEG_B (Right Digit)
         for seg in SEG_B:
             idx = get_bit_index(seg["name"])
-            scalar_name = f"seg{idx}"
-            state = 0
-            if hasattr(dut, scalar_name):
-                try: state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
-                except Exception: pass
-            elif hasattr(dut, "seg"):
-                state = (seg_int >> idx) & 1
-            seg["state"] = 1 if (state == 1 and cat_val == 1) else 0
+            if pov_active:
+                # Use latched memory if POV is active
+                seg["state"] = (seg_memory_B >> idx) & 1
+            else:
+                # Normal slow behavior
+                seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 1) else 0
+
 
         # E. Draw Everything
         screen.blit(bg_image, (0, 0))

@@ -16,3 +16,12 @@ sim_build/
 # OS Generated Files
 .DS_Store
 Thumbs.db
+
+# Ignore all VHDL files in the main directory (or anywhere else)
+*.vhd
+
+# EXCEPT the ones inside the src/ folder and its subfolders
+!src/**/*.vhd
+
+# Ignore the local testing directory
+Test Files/
