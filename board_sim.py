@@ -98,7 +98,7 @@ async def run_visualizer(dut):
     pygame_clock = pygame.time.Clock()
     
     # POV (Persistence of Vision) Tracking Variables
-    last_cat_flip_time = 0
+    last_cat_flip_time = time.time()
     last_cat_val = 0
     pov_active = False
     seg_memory_A = 0 
@@ -212,17 +212,23 @@ async def run_visualizer(dut):
             
             current_seg_state |= (state << i)
 
-        # POV Timing Logic
-        current_time = get_sim_time('ns')
+        # POV Timing Logic (Using Real-World Time)
+        current_real_time = time.time()
+        
         if cat_val != last_cat_val:
-            delta = current_time - last_cat_flip_time
-            last_cat_flip_time = current_time
+            delta = current_real_time - last_cat_flip_time
+            last_cat_flip_time = current_real_time
             last_cat_val = cat_val
             
-            # If cat flips faster than 10ms (10,000,000 ns), engage POV
-            if delta < 10000000:
+            # If the physical real-world time between flips is less than 50ms 
+            # (approx 20Hz+ visual refresh), the screen can't draw it cleanly. Engage POV.
+            if delta < 0.05:
                 pov_active = True
             else:
+                pov_active = False
+        else:
+            # Saftey catch: If the multiplexer stops flipping entirely, disengage POV
+            if (current_real_time - last_cat_flip_time) > 0.05:
                 pov_active = False
 
         # Latch segment states into memory based on active digit

@@ -78,16 +78,24 @@ The simulator reads your VHDL ports based on their names. You can write them as 
 
 *Note: Only declare the ports you are actively using. The simulator will ignore the rest.*
 
-## Simulation Quirks & Timing
+## Simulation Quirks & Hardware Realism
 
 ### 1. Generating a 1 Hz Clock (1-Second Timer)
-The simulator provides a 125 MHz clock (`clk`), just like the real board. However, simulating 125,000,000 clock cycles takes your computer a massive amount of processing time. 
+The simulator provides a 125 MHz clock (`clk`), exactly like the physical Zybo board. However, simulating 125,000,000 clock cycles takes massive computational power. If your VHDL tries to count to 125 million, the simulation will appear frozen because it takes minutes of real-world time to process one simulated second. 
 
-If you try to count to 125,000,000 in your VHDL, the simulation will appear frozen because it takes minutes of real-world time to process one simulated second. 
+**The Fix:** Use VHDL `generic` parameters for your counters. To create a 1 Hz (1-second) pulse in the simulator, scale your maximum count down to `50000`. This allows the visualizer to update in real-time. When you are ready to push your code to the real FPGA, simply change that generic back to `125000000`.
 
-**To create a 1 Hz (1-second) pulse in this simulator, your counter should only count to `50000`.** This scales the math down so the visualizer updates in real-time on your screen. 
+### 2. 7-Segment Multiplexing (Persistence of Vision)
+On real hardware, multiplexing (switching between the left and right digits) faster than 60Hz creates an optical illusion that makes both digits appear solid simultaneously. **This simulator natively replicates that illusion.**
 
-### 2. 7-Segment Multiplexing (Flickering)
-When building a multiplexer for the 7-segment display, do not try to switch the digits back and forth at 60 Hz. The Pygame window updates at 60 frames per second and cannot blur high-speed switching together like a human eye does (persistence of vision). 
+* **Slow Switching (Debugging):** If your VHDL switches the `cat` bit slowly (e.g., every 0.5 seconds), the Pygame window will show only one digit at a time. This is highly recommended for initially verifying your routing logic!
+* **Fast Switching (Hardware Speed):** Once you know your logic works, increase your multiplexer speed. If the Python backend detects the `cat` bit flipping faster than ~20Hz in real-world time, it will automatically engage "POV Mode" and render both digits simultaneously, perfectly mimicking the physical board.
 
-If you switch digits too fast, the display will look broken or flicker randomly. Instead, test your multiplexer by switching the `cat` bit slowly (e.g., every 0.5 seconds) so you can visually verify that the correct numbers are being routed to the Left and Right digits.
+### 3. Segment Mapping (`to` vs `downto`)
+The simulator enforces strict hardware pin mapping for the 7-segment display. 
+* Index `0` is physically wired to Segment A (Top).
+* Index `6` is physically wired to Segment G (Middle).
+
+If you declare your output vector as `seg : out std_logic_vector(0 to 6)`, assigning `"1111110"` will map the leftmost '1' to index `0` (Top), resulting in a perfect '0' on the display. 
+
+**Warning:** If you declare your vector as `6 downto 0`, the leftmost bit of `"1111110"` now corresponds to index `6` (Middle). This will draw your numbers completely inside out and backwards! Pay close attention to your vector direction, as the simulator will mangle your display exactly the same way the physical FPGA would.

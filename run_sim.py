@@ -1,4 +1,6 @@
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
 from pathlib import Path
 from cocotb_tools.runner import get_runner
 
@@ -31,7 +33,10 @@ def main():
     # 4. Run the simulation and link it to your Pygame visualizer
     runner.test(
         hdl_toplevel=top_level_entity,
-        test_module="board_sim", 
+        test_module="board_sim",
+        extra_env={
+            "COCOTB_LOG_LEVEL": "ERROR"
+        }
     )
 
 if __name__ == "__main__":
