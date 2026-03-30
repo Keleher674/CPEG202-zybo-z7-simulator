@@ -35,7 +35,7 @@ sudo apt update
 sudo apt install ghdl python3 python3-pip -y
 
 # Install the required Python simulation libraries
-pip3 install cocotb pygame cocotb-tools
+pip3 install cocotb pygame 
 ~~~
 *(Note: Depending on your Ubuntu version, if pip restricts global installs, you may need to append `--break-system-packages` to the pip command, or set up a python virtual environment).*
 
