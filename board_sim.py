@@ -64,15 +64,16 @@ SWITCHES = [
     {"rect": pygame.Rect(751, 332, 26, 44), "state": 0, "name": "sw7", "y_offset": 35},
 ]
 
+# REVERTED TO CORRECT A-G MAPPING (Y=502 is Top, Y=526 is Middle)
 SEG_A = [
-    {"type": "poly", "points": [(176, 502), (197, 502), (195, 506), (174, 506)], "state": 0, "name": "seg0"}, 
-    {"type": "poly", "points": [(198, 505), (202, 505), (197, 525), (193, 525)], "state": 0, "name": "seg1"}, 
-    {"type": "poly", "points": [(196, 529), (200, 529), (194, 551), (190, 551)], "state": 0, "name": "seg2"}, 
-    {"type": "poly", "points": [(172, 551), (191, 551), (189, 555), (170, 555)], "state": 0, "name": "seg3"}, 
-    {"type": "poly", "points": [(169, 529), (173, 529), (167, 551), (163, 551)], "state": 0, "name": "seg4"}, 
-    {"type": "poly", "points": [(171, 505), (175, 505), (170, 525), (166, 525)], "state": 0, "name": "seg5"}, 
-    {"type": "poly", "points": [(174, 526), (194, 526), (192, 530), (172, 530)], "state": 0, "name": "seg6"}, 
-    {"type": "circle", "pos": (204, 554), "state": 0, "name": "seg7"}
+    {"type": "poly", "points": [(176, 502), (197, 502), (195, 506), (174, 506)], "state": 0, "name": "seg0"}, # A (Top)
+    {"type": "poly", "points": [(198, 505), (202, 505), (197, 525), (193, 525)], "state": 0, "name": "seg1"}, # B (Top Right)
+    {"type": "poly", "points": [(196, 529), (200, 529), (194, 551), (190, 551)], "state": 0, "name": "seg2"}, # C (Bottom Right)
+    {"type": "poly", "points": [(172, 551), (191, 551), (189, 555), (170, 555)], "state": 0, "name": "seg3"}, # D (Bottom)
+    {"type": "poly", "points": [(169, 529), (173, 529), (167, 551), (163, 551)], "state": 0, "name": "seg4"}, # E (Bottom Left)
+    {"type": "poly", "points": [(171, 505), (175, 505), (170, 525), (166, 525)], "state": 0, "name": "seg5"}, # F (Top Left)
+    {"type": "poly", "points": [(174, 526), (194, 526), (192, 530), (172, 530)], "state": 0, "name": "seg6"}, # G (Middle)
+    {"type": "circle", "pos": (204, 554), "state": 0, "name": "seg7"} # DP
 ]
 
 SEG_B = [
@@ -100,8 +101,8 @@ async def run_visualizer(dut):
     last_cat_flip_time = 0
     last_cat_val = 0
     pov_active = False
-    seg_memory_A = 0 # Latched state for Left Digit (cat_val == 0)
-    seg_memory_B = 0 # Latched state for Right Digit (cat_val == 1)
+    seg_memory_A = 0 
+    seg_memory_B = 0 
 
     running = True
     
@@ -151,13 +152,9 @@ async def run_visualizer(dut):
         await Timer(10, unit="us")
 
         # D. Read Outputs from VHDL
-        led_int, seg_int = 0, 0
+        led_int = 0
         if hasattr(dut, "led"):
             try: led_int = int(dut.led.value)
-            except ValueError: pass
-            
-        if hasattr(dut, "seg"):
-            try: seg_int = int(dut.seg.value)
             except ValueError: pass
 
         cat_val = 0
@@ -175,16 +172,44 @@ async def run_visualizer(dut):
             elif hasattr(dut, "led"):
                 led["state"] = (led_int >> idx) & 1
 
-        # Resolve the current 8-bit segment state from either scalars or vectors
+        # Handle 'downto' vs 'to' without crashing VPI
         current_seg_state = 0
+        seg_int = 0
+        if hasattr(dut, "seg"):
+            try:
+                seg_str = str(dut.seg.value)
+                is_downto = True  # Default to standard hardware mapping
+
+                # Attempt to dynamically detect if VHDL is 'downto' or 'to'
+                if hasattr(dut.seg, '_range'):
+                    is_downto = (dut.seg._range.direction == 'downto')
+                elif hasattr(dut.seg, 'range'):
+                    is_downto = (dut.seg.range.direction == 'downto')
+                
+                # Enforce physical hardware pinning based on direction
+                if is_downto:
+                    # For 'downto', the rightmost char of the string is bit 0.
+                    seg_int = int(seg_str, 2)
+                else:
+                    # For 'to', the leftmost char is bit 0. Reverse the string to align bits.
+                    seg_int = int(seg_str[::-1], 2)
+            except Exception:
+                pass
+
         for i in range(8):
-            scalar_name = f"seg{i}"
             state = 0
+            scalar_name = f"seg{i}"
+            
+            # 1. Check if they used scalar ports (e.g., seg0, seg1)
             if hasattr(dut, scalar_name):
-                try: state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
-                except Exception: pass
-            elif hasattr(dut, "seg"):
+                try: 
+                    state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
+                except Exception: 
+                    pass
+            # 2. Extract from the properly aligned vector integer
+            else:
                 state = (seg_int >> i) & 1
+            
             current_seg_state |= (state << i)
 
         # POV Timing Logic
@@ -210,20 +235,16 @@ async def run_visualizer(dut):
         for seg in SEG_A:
             idx = get_bit_index(seg["name"])
             if pov_active:
-                # Use latched memory if POV is active
                 seg["state"] = (seg_memory_A >> idx) & 1
             else:
-                # Normal slow behavior
                 seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 0) else 0
 
         # Apply states to SEG_B (Right Digit)
         for seg in SEG_B:
             idx = get_bit_index(seg["name"])
             if pov_active:
-                # Use latched memory if POV is active
                 seg["state"] = (seg_memory_B >> idx) & 1
             else:
-                # Normal slow behavior
                 seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 1) else 0
 
 
@@ -264,6 +285,6 @@ async def run_visualizer(dut):
                     pygame.draw.circle(screen, (255, 255, 255), s["pos"], SEG_RADIUS+1, 1)
         
         pygame.display.flip()
-        pygame_clock.tick(60) # Ensure a smooth 60 FPS update rate for the GUI
+        pygame_clock.tick(60)
     
     pygame.quit()
