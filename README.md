@@ -1,24 +1,52 @@
 # Zybo Z7 Virtual FPGA Simulator
 
-This is a local, software-based simulator for the Digilent Zybo Z7-10 FPGA board. It allows you to write, compile, and visually test VHDL designs using a Python/Pygame interface without needing physical hardware.
+This is a local, software-based simulator for the Digilent Zybo Z7-10 FPGA board. It allows you to write, compile, and visually test VHDL designs using a Python/Pygame interface, completely replacing the need for physical hardware during the verification phase.
 
-## Prerequisites
+## Windows + VSCode Setup (WSL)
 
-To run this on your local machine (Windows, macOS, or Linux), you must have the following installed:
-1. **Python 3** and **pip**
-2. **GHDL** (The VHDL compiler)
-3. Python packages: Run `pip install cocotb pygame cocotb-tools` in your terminal.
+Because the VHDL compiler (GHDL) and the Python testbench framework (Cocotb) operate best in a Linux environment, Windows users must run this simulator using the Windows Subsystem for Linux (WSL). Windows 11 natively supports Linux GUI applications (WSLg), allowing the simulator's graphical window to open seamlessly on your desktop.
 
-*(Note for Windows users: It is highly recommended to run this inside WSL (Windows Subsystem for Linux) for compatibility with GHDL).*
+### Prerequisites
+Before starting, ensure you have the following installed on your Windows machine:
+1. **WSL (Ubuntu):** Open PowerShell as Administrator and run `wsl --install`. Restart your computer if prompted.
+2. **Visual Studio Code (VSCode):** Installed normally on Windows.
+3. **WSL Extension for VSCode:** Open VSCode, go to the Extensions tab, and install the official Microsoft "WSL" extension.
 
-## How to Run
+### Installation & Setup Steps
 
-1. Download or clone this entire repository to your computer.
-2. Place all of your `.vhd` files inside the `src/` folder.
-3. Open your terminal, navigate to the main project folder (where `run_sim.py` is located), and run:
-   ```bash
-   python3 run_sim.py
-   ```
+**1. Download the Repository**
+Download the project files to your computer (either via `git clone` or by downloading and extracting the ZIP file). You need the entire folder structure, including `src/` and the Python scripts.
+
+**2. Open the Project in WSL**
+1. Open your **Ubuntu** terminal app from the Windows Start menu.
+2. Navigate to the directory where you saved the simulator folder. (Note: Your Windows `C:` drive is located at `/mnt/c/` in WSL. For example: `cd /mnt/c/Users/YourName/Downloads/Zybo-Simulator`).
+3. Once inside the project folder, type the following command to open the folder in VSCode bridged to your Linux environment:
+
+~~~bash
+code .
+~~~
+
+**3. Install Dependencies**
+In VSCode, open the integrated terminal (`Terminal` -> `New Terminal`). Verify the terminal prompt shows a Linux bash environment, not Windows PowerShell. Run the following commands to install the required compiler and Python libraries:
+
+~~~bash
+# Update package lists and install the GHDL compiler and Python
+sudo apt update
+sudo apt install ghdl python3 python3-pip -y
+
+# Install the required Python simulation libraries
+pip3 install cocotb pygame cocotb-tools
+~~~
+*(Note: Depending on your Ubuntu version, if pip restricts global installs, you may need to append `--break-system-packages` to the pip command, or set up a python virtual environment).*
+
+**4. Run the Basic Simulation**
+To verify your environment is set up correctly, ensure your VHDL files are located inside the `src/` folder, then run the executable script:
+
+~~~bash
+python3 run_sim.py
+~~~
+
+If successful, the graphical Zybo board interface will launch, allowing you to interact with the switches and buttons to test the default mapping.
 
 ## VHDL Structure & Naming Rules
 
