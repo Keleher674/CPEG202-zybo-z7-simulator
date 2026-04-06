@@ -47,7 +47,7 @@ _(Note: Depending on your Ubuntu version, if pip restricts global installs, you 
 To verify your environment is set up correctly, ensure your VHDL files are located inside the `src/` folder, then run the executable script:
 
 ```bash
-python3 run_sim.py
+python3 run.py
 ```
 
 If successful, the graphical Zybo board interface will launch, allowing you to interact with the switches and buttons to test the default mapping.
@@ -55,7 +55,7 @@ If successful, the graphical Zybo board interface will launch, allowing you to i
 ## VHDL Structure & Naming Rules
 
 - **File Names:** You can name your `.vhd` files whatever you want. The compiler reads everything inside the `src/` folder and links it automatically.
-- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build.
+- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build _(by default)_.
 
 ```vhdl
 entity top_level is
@@ -114,12 +114,15 @@ If you are writing a standard VHDL testbench (a file that generates its own simu
 1. Ensure your testbench file is in the `src/` folder and ends with `_tb.vhd` (e.g., `counter_tb.vhd`).
    - **Crucial Rule:** The entity name _inside_ your testbench file must exactly match the filename. If your file is `counter_tb.vhd`, your code must declare `entity counter_tb is`.
 2. Open your terminal in the main project folder and run:
+
    ```bash
-   python3 run_tb.py
+   python3 run.py --test
    ```
+
 3. Type the number corresponding to the testbench you want to run and press Enter.
 4. The script will compile your code and generate a `waveforms.vcd` file.
 5. To view the results, open the industry-standard GTKWave viewer by running:
+
    ```bash
    gtkwave waveforms.vcd &
    ```
@@ -131,8 +134,6 @@ When GTKWave opens, your signals will not be visible immediately.
 2. In the bottom-left window, highlight the signals you want to see.
 3. Click the **Append** button at the bottom to add them to the main waveform viewer.
 4. Use the magnifying glass icons at the top to zoom in and out of your time scale.
-
-<br>
 
 <details>
 <summary><h2>Advanced Features</h2> (Click to expand)</summary>
@@ -149,11 +150,15 @@ python3 run_sim.py [arguments]
 
 **Available Arguments:**
 
-| Short | Long Flag  | Default     | Description                                           |
-| :---: | :--------- | :---------- | :---------------------------------------------------- |
-| `-p`  | `--path`   | `src`       | Path to a specific directory containing `.vhd` files. |
-| `-e`  | `--entity` | `top_level` | Name of the top-level entity to simulate.             |
-| `-h`  | `--help`   | `N/A`       | Shows the help menu and exits.                        |
+| Short | Long Flag       | Default         | Description                                                        |
+| :---: | :-------------- | :-------------- | :----------------------------------------------------------------- |
+| `-p`  | `--path`        | `src`           | Path to a specific directory containing `.vhd` files.              |
+| `-e`  | `--entity`      | `top_level`     | Name of the top-level entity to simulate. (not for testbench)      |
+| `-t`  | `--test`        | `false`         | Run the testbench instead of the normal simulation.                |
+| `-ns` | `--no-sim`      | `false`         | Compile testbench and generate VCD file, do not run the simulation |
+| `-o`  | `--output-dir`  | `waveforms`     | Directory to store .vcd waveform files.                            |
+| `-f`  | `--output-file` | `waveforms.vcd` | Name of the top-level entity to simulate.                          |
+| `-h`  | `--help`        | `N/A`           | Shows the help menu and exits.                                     |
 
 **Examples:**
 
