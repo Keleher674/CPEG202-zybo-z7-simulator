@@ -163,7 +163,7 @@ Run the simulation on the default directory:
 python3 run_sim.py
 ```
 
-Target a specific test directory with :
+Target a specific test directory:
 
 ```bash
 python3 run_sim.py --path="src1"
