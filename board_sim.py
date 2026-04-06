@@ -8,9 +8,11 @@ import re
 import time
 from pathlib import Path
 
+
 def get_bit_index(name):
-    nums = re.findall(r'\d+', name)
+    nums = re.findall(r"\d+", name)
     return int(nums[0]) if nums else 0
+
 
 # 1. Initialize Pygame
 WINDOW_WIDTH = 800
@@ -18,7 +20,7 @@ WINDOW_HEIGHT = 600
 pygame.display.init()
 pygame.font.init()
 LABEL_FONT = pygame.font.SysFont(None, 20)
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) 
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Board Simulator")
 
 # 2. Load Background Image
@@ -36,14 +38,70 @@ BUTTON_RADIUS = 12
 SEG_RADIUS = 3
 
 LEDS = [
-    {"pos": (154, 290), "color_on": (0, 255, 0), "color_off": (0, 50, 0), "state": 0, "name": "led0", "y_offset": -20},
-    {"pos": (186, 290), "color_on": (0, 255, 0), "color_off": (0, 50, 0), "state": 0, "name": "led1", "y_offset": -20},
-    {"pos": (215, 290), "color_on": (0, 255, 0), "color_off": (0, 50, 0), "state": 0, "name": "led2", "y_offset": -20},
-    {"pos": (248, 290), "color_on": (0, 255, 0), "color_off": (0, 50, 0), "state": 0, "name": "led3", "y_offset": -20},
-    {"pos": (364, 523), "color_on": (255, 0, 0), "color_off": (50, 0, 0), "state": 0, "name": "led4", "y_offset": 20},
-    {"pos": (378, 523), "color_on": (255, 0, 0), "color_off": (50, 0, 0), "state": 0, "name": "led5", "y_offset": 35},
-    {"pos": (391, 523), "color_on": (255, 0, 0), "color_off": (50, 0, 0), "state": 0, "name": "led6", "y_offset": 20},
-    {"pos": (407, 523), "color_on": (255, 0, 0), "color_off": (50, 0, 0), "state": 0, "name": "led7", "y_offset": 35},
+    {
+        "pos": (154, 290),
+        "color_on": (0, 255, 0),
+        "color_off": (0, 50, 0),
+        "state": 0,
+        "name": "led0",
+        "y_offset": -20,
+    },
+    {
+        "pos": (186, 290),
+        "color_on": (0, 255, 0),
+        "color_off": (0, 50, 0),
+        "state": 0,
+        "name": "led1",
+        "y_offset": -20,
+    },
+    {
+        "pos": (215, 290),
+        "color_on": (0, 255, 0),
+        "color_off": (0, 50, 0),
+        "state": 0,
+        "name": "led2",
+        "y_offset": -20,
+    },
+    {
+        "pos": (248, 290),
+        "color_on": (0, 255, 0),
+        "color_off": (0, 50, 0),
+        "state": 0,
+        "name": "led3",
+        "y_offset": -20,
+    },
+    {
+        "pos": (364, 523),
+        "color_on": (255, 0, 0),
+        "color_off": (50, 0, 0),
+        "state": 0,
+        "name": "led4",
+        "y_offset": 20,
+    },
+    {
+        "pos": (378, 523),
+        "color_on": (255, 0, 0),
+        "color_off": (50, 0, 0),
+        "state": 0,
+        "name": "led5",
+        "y_offset": 35,
+    },
+    {
+        "pos": (391, 523),
+        "color_on": (255, 0, 0),
+        "color_off": (50, 0, 0),
+        "state": 0,
+        "name": "led6",
+        "y_offset": 20,
+    },
+    {
+        "pos": (407, 523),
+        "color_on": (255, 0, 0),
+        "color_off": (50, 0, 0),
+        "state": 0,
+        "name": "led7",
+        "y_offset": 35,
+    },
 ]
 
 BUTTONS = [
@@ -66,26 +124,97 @@ SWITCHES = [
 
 # REVERTED TO CORRECT A-G MAPPING (Y=502 is Top, Y=526 is Middle)
 SEG_A = [
-    {"type": "poly", "points": [(176, 502), (197, 502), (195, 506), (174, 506)], "state": 0, "name": "seg0"}, # A (Top)
-    {"type": "poly", "points": [(198, 505), (202, 505), (197, 525), (193, 525)], "state": 0, "name": "seg1"}, # B (Top Right)
-    {"type": "poly", "points": [(196, 529), (200, 529), (194, 551), (190, 551)], "state": 0, "name": "seg2"}, # C (Bottom Right)
-    {"type": "poly", "points": [(172, 551), (191, 551), (189, 555), (170, 555)], "state": 0, "name": "seg3"}, # D (Bottom)
-    {"type": "poly", "points": [(169, 529), (173, 529), (167, 551), (163, 551)], "state": 0, "name": "seg4"}, # E (Bottom Left)
-    {"type": "poly", "points": [(171, 505), (175, 505), (170, 525), (166, 525)], "state": 0, "name": "seg5"}, # F (Top Left)
-    {"type": "poly", "points": [(174, 526), (194, 526), (192, 530), (172, 530)], "state": 0, "name": "seg6"}, # G (Middle)
-    {"type": "circle", "pos": (204, 554), "state": 0, "name": "seg7"} # DP
+    {
+        "type": "poly",
+        "points": [(176, 502), (197, 502), (195, 506), (174, 506)],
+        "state": 0,
+        "name": "seg0",
+    },  # A (Top)
+    {
+        "type": "poly",
+        "points": [(198, 505), (202, 505), (197, 525), (193, 525)],
+        "state": 0,
+        "name": "seg1",
+    },  # B (Top Right)
+    {
+        "type": "poly",
+        "points": [(196, 529), (200, 529), (194, 551), (190, 551)],
+        "state": 0,
+        "name": "seg2",
+    },  # C (Bottom Right)
+    {
+        "type": "poly",
+        "points": [(172, 551), (191, 551), (189, 555), (170, 555)],
+        "state": 0,
+        "name": "seg3",
+    },  # D (Bottom)
+    {
+        "type": "poly",
+        "points": [(169, 529), (173, 529), (167, 551), (163, 551)],
+        "state": 0,
+        "name": "seg4",
+    },  # E (Bottom Left)
+    {
+        "type": "poly",
+        "points": [(171, 505), (175, 505), (170, 525), (166, 525)],
+        "state": 0,
+        "name": "seg5",
+    },  # F (Top Left)
+    {
+        "type": "poly",
+        "points": [(174, 526), (194, 526), (192, 530), (172, 530)],
+        "state": 0,
+        "name": "seg6",
+    },  # G (Middle)
+    {"type": "circle", "pos": (204, 554), "state": 0, "name": "seg7"},  # DP
 ]
 
 SEG_B = [
-    {"type": "poly", "points": [(226, 502), (247, 502), (245, 506), (224, 506)], "state": 0, "name": "seg0"}, 
-    {"type": "poly", "points": [(248, 505), (252, 505), (247, 525), (243, 525)], "state": 0, "name": "seg1"}, 
-    {"type": "poly", "points": [(246, 529), (250, 529), (244, 551), (240, 551)], "state": 0, "name": "seg2"}, 
-    {"type": "poly", "points": [(222, 551), (241, 551), (239, 555), (220, 555)], "state": 0, "name": "seg3"}, 
-    {"type": "poly", "points": [(219, 529), (223, 529), (217, 551), (213, 551)], "state": 0, "name": "seg4"}, 
-    {"type": "poly", "points": [(221, 505), (225, 505), (220, 525), (216, 525)], "state": 0, "name": "seg5"}, 
-    {"type": "poly", "points": [(224, 526), (244, 526), (242, 530), (222, 530)], "state": 0, "name": "seg6"}, 
-    {"type": "circle", "pos": (254, 554), "state": 0, "name": "seg7"}
+    {
+        "type": "poly",
+        "points": [(226, 502), (247, 502), (245, 506), (224, 506)],
+        "state": 0,
+        "name": "seg0",
+    },
+    {
+        "type": "poly",
+        "points": [(248, 505), (252, 505), (247, 525), (243, 525)],
+        "state": 0,
+        "name": "seg1",
+    },
+    {
+        "type": "poly",
+        "points": [(246, 529), (250, 529), (244, 551), (240, 551)],
+        "state": 0,
+        "name": "seg2",
+    },
+    {
+        "type": "poly",
+        "points": [(222, 551), (241, 551), (239, 555), (220, 555)],
+        "state": 0,
+        "name": "seg3",
+    },
+    {
+        "type": "poly",
+        "points": [(219, 529), (223, 529), (217, 551), (213, 551)],
+        "state": 0,
+        "name": "seg4",
+    },
+    {
+        "type": "poly",
+        "points": [(221, 505), (225, 505), (220, 525), (216, 525)],
+        "state": 0,
+        "name": "seg5",
+    },
+    {
+        "type": "poly",
+        "points": [(224, 526), (244, 526), (242, 530), (222, 530)],
+        "state": 0,
+        "name": "seg6",
+    },
+    {"type": "circle", "pos": (254, 554), "state": 0, "name": "seg7"},
 ]
+
 
 @cocotb.test()
 async def run_visualizer(dut):
@@ -96,16 +225,16 @@ async def run_visualizer(dut):
         cocotb.start_soon(Clock(dut.sysclk, 8, unit="ns").start())
 
     pygame_clock = pygame.time.Clock()
-    
+
     # POV (Persistence of Vision) Tracking Variables
     last_cat_flip_time = time.time()
     last_cat_val = 0
     pov_active = False
-    seg_memory_A = 0 
-    seg_memory_B = 0 
+    seg_memory_A = 0
+    seg_memory_B = 0
 
     running = True
-    
+
     while running:
         # A. Handle Pygame Events
         for event in pygame.event.get():
@@ -115,7 +244,7 @@ async def run_visualizer(dut):
                 mx, my = event.pos
                 for btn in BUTTONS:
                     bx, by = btn["pos"]
-                    if (mx - bx)**2 + (my - by)**2 <= BUTTON_RADIUS**2:
+                    if (mx - bx) ** 2 + (my - by) ** 2 <= BUTTON_RADIUS**2:
                         btn["pressed"] = True
                 for sw in SWITCHES:
                     if sw["rect"].collidepoint(event.pos):
@@ -126,27 +255,40 @@ async def run_visualizer(dut):
 
         # B. Send Inputs to VHDL
         sw_int = sum([sw["state"] << get_bit_index(sw["name"]) for sw in SWITCHES])
-        btn_int = sum([(1 if btn["pressed"] else 0) << get_bit_index(btn["name"]) for btn in BUTTONS])
+        btn_int = sum(
+            [
+                (1 if btn["pressed"] else 0) << get_bit_index(btn["name"])
+                for btn in BUTTONS
+            ]
+        )
 
         if hasattr(dut, "sw"):
-            try: dut.sw.value = sw_int & ((1 << len(dut.sw)) - 1)
-            except Exception: pass
-                
+            try:
+                dut.sw.value = sw_int & ((1 << len(dut.sw)) - 1)
+            except Exception:
+                pass
+
         if hasattr(dut, "btn"):
-            try: dut.btn.value = btn_int & ((1 << len(dut.btn)) - 1)
-            except Exception: pass
+            try:
+                dut.btn.value = btn_int & ((1 << len(dut.btn)) - 1)
+            except Exception:
+                pass
 
         for sw in SWITCHES:
             scalar_name = f"sw{get_bit_index(sw['name'])}"
             if hasattr(dut, scalar_name):
-                try: getattr(dut, scalar_name).value = sw["state"]
-                except Exception: pass
-                
+                try:
+                    getattr(dut, scalar_name).value = sw["state"]
+                except Exception:
+                    pass
+
         for btn in BUTTONS:
             scalar_name = f"btn{get_bit_index(btn['name'])}"
             if hasattr(dut, scalar_name):
-                try: getattr(dut, scalar_name).value = 1 if btn["pressed"] else 0
-                except Exception: pass
+                try:
+                    getattr(dut, scalar_name).value = 1 if btn["pressed"] else 0
+                except Exception:
+                    pass
 
         # C. Advance VHDL Simulation
         await Timer(10, unit="us")
@@ -154,21 +296,29 @@ async def run_visualizer(dut):
         # D. Read Outputs from VHDL
         led_int = 0
         if hasattr(dut, "led"):
-            try: led_int = int(dut.led.value)
-            except ValueError: pass
+            try:
+                led_int = int(dut.led.value)
+            except ValueError:
+                pass
 
         cat_val = 0
         if hasattr(dut, "cat"):
-            try: cat_val = 1 if str(dut.cat.value) == '1' else 0
-            except Exception: pass
+            try:
+                cat_val = 1 if str(dut.cat.value) == "1" else 0
+            except Exception:
+                pass
 
         # Process LEDs
         for led in LEDS:
             idx = get_bit_index(led["name"])
             scalar_name = f"led{idx}"
             if hasattr(dut, scalar_name):
-                try: led["state"] = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
-                except Exception: led["state"] = 0
+                try:
+                    led["state"] = (
+                        1 if str(getattr(dut, scalar_name).value) == "1" else 0
+                    )
+                except Exception:
+                    led["state"] = 0
             elif hasattr(dut, "led"):
                 led["state"] = (led_int >> idx) & 1
 
@@ -181,11 +331,11 @@ async def run_visualizer(dut):
                 is_downto = True  # Default to standard hardware mapping
 
                 # Attempt to dynamically detect if VHDL is 'downto' or 'to'
-                if hasattr(dut.seg, '_range'):
-                    is_downto = (dut.seg._range.direction == 'downto')
-                elif hasattr(dut.seg, 'range'):
-                    is_downto = (dut.seg.range.direction == 'downto')
-                
+                if hasattr(dut.seg, "_range"):
+                    is_downto = dut.seg._range.direction == "downto"
+                elif hasattr(dut.seg, "range"):
+                    is_downto = dut.seg.range.direction == "downto"
+
                 # Enforce physical hardware pinning based on direction
                 if is_downto:
                     # For 'downto', the rightmost char of the string is bit 0.
@@ -199,28 +349,28 @@ async def run_visualizer(dut):
         for i in range(8):
             state = 0
             scalar_name = f"seg{i}"
-            
+
             # 1. Check if they used scalar ports (e.g., seg0, seg1)
             if hasattr(dut, scalar_name):
-                try: 
-                    state = 1 if str(getattr(dut, scalar_name).value) == '1' else 0
-                except Exception: 
+                try:
+                    state = 1 if str(getattr(dut, scalar_name).value) == "1" else 0
+                except Exception:
                     pass
             # 2. Extract from the properly aligned vector integer
             else:
                 state = (seg_int >> i) & 1
-            
-            current_seg_state |= (state << i)
+
+            current_seg_state |= state << i
 
         # POV Timing Logic (Using Real-World Time)
         current_real_time = time.time()
-        
+
         if cat_val != last_cat_val:
             delta = current_real_time - last_cat_flip_time
             last_cat_flip_time = current_real_time
             last_cat_val = cat_val
-            
-            # If the physical real-world time between flips is less than 50ms 
+
+            # If the physical real-world time between flips is less than 50ms
             # (approx 20Hz+ visual refresh), the screen can't draw it cleanly. Engage POV.
             if delta < 0.05:
                 pov_active = True
@@ -243,7 +393,9 @@ async def run_visualizer(dut):
             if pov_active:
                 seg["state"] = (seg_memory_A >> idx) & 1
             else:
-                seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 0) else 0
+                seg["state"] = (
+                    1 if (((current_seg_state >> idx) & 1) and cat_val == 0) else 0
+                )
 
         # Apply states to SEG_B (Right Digit)
         for seg in SEG_B:
@@ -251,34 +403,65 @@ async def run_visualizer(dut):
             if pov_active:
                 seg["state"] = (seg_memory_B >> idx) & 1
             else:
-                seg["state"] = 1 if (((current_seg_state >> idx) & 1) and cat_val == 1) else 0
-
+                seg["state"] = (
+                    1 if (((current_seg_state >> idx) & 1) and cat_val == 1) else 0
+                )
 
         # E. Draw Everything
         screen.blit(bg_image, (0, 0))
-        
+
         for sw in SWITCHES:
             pygame.draw.rect(screen, (150, 150, 150), sw["rect"])
             th = sw["rect"].height // 3
-            tr = pygame.Rect(sw["rect"].x, sw["rect"].y if sw["state"] == 1 else sw["rect"].y + sw["rect"].height - th, sw["rect"].width, th)
+            tr = pygame.Rect(
+                sw["rect"].x,
+                (
+                    sw["rect"].y
+                    if sw["state"] == 1
+                    else sw["rect"].y + sw["rect"].height - th
+                ),
+                sw["rect"].width,
+                th,
+            )
             pygame.draw.rect(screen, (0, 0, 0), tr)
-            pygame.draw.rect(screen, (255, 255, 255), (sw["rect"].x-1, sw["rect"].y-1, sw["rect"].width+2, sw["rect"].height+2), 1)
+            pygame.draw.rect(
+                screen,
+                (255, 255, 255),
+                (
+                    sw["rect"].x - 1,
+                    sw["rect"].y - 1,
+                    sw["rect"].width + 2,
+                    sw["rect"].height + 2,
+                ),
+                1,
+            )
             ts = LABEL_FONT.render(sw["name"], True, (255, 255, 255), (0, 0, 0))
-            screen.blit(ts, ts.get_rect(center=(sw["rect"].centerx, sw["rect"].centery + sw["y_offset"])))
+            screen.blit(
+                ts,
+                ts.get_rect(
+                    center=(sw["rect"].centerx, sw["rect"].centery + sw["y_offset"])
+                ),
+            )
 
         for led in LEDS:
             c = led["color_on"] if led["state"] == 1 else led["color_off"]
             pygame.draw.circle(screen, c, led["pos"], LED_RADIUS)
-            pygame.draw.circle(screen, (255, 255, 255), led["pos"], LED_RADIUS+1, 1)
+            pygame.draw.circle(screen, (255, 255, 255), led["pos"], LED_RADIUS + 1, 1)
             ts = LABEL_FONT.render(led["name"], True, (255, 255, 255), (0, 0, 0))
-            screen.blit(ts, ts.get_rect(center=(led["pos"][0], led["pos"][1] + led["y_offset"])))
+            screen.blit(
+                ts, ts.get_rect(center=(led["pos"][0], led["pos"][1] + led["y_offset"]))
+            )
 
         for btn in BUTTONS:
             c = (150, 150, 150) if btn["pressed"] else (0, 0, 0)
             pygame.draw.circle(screen, c, btn["pos"], BUTTON_RADIUS)
-            pygame.draw.circle(screen, (255, 255, 255), btn["pos"], BUTTON_RADIUS+1, 1)
+            pygame.draw.circle(
+                screen, (255, 255, 255), btn["pos"], BUTTON_RADIUS + 1, 1
+            )
             ts = LABEL_FONT.render(btn["name"], True, (255, 255, 255), (0, 0, 0))
-            screen.blit(ts, ts.get_rect(center=(btn["pos"][0], btn["pos"][1] + btn["y_offset"])))
+            screen.blit(
+                ts, ts.get_rect(center=(btn["pos"][0], btn["pos"][1] + btn["y_offset"]))
+            )
 
         for d in [SEG_A, SEG_B]:
             for s in d:
@@ -288,9 +471,11 @@ async def run_visualizer(dut):
                     pygame.draw.polygon(screen, (255, 255, 255), s["points"], 1)
                 else:
                     pygame.draw.circle(screen, c, s["pos"], SEG_RADIUS)
-                    pygame.draw.circle(screen, (255, 255, 255), s["pos"], SEG_RADIUS+1, 1)
-        
+                    pygame.draw.circle(
+                        screen, (255, 255, 255), s["pos"], SEG_RADIUS + 1, 1
+                    )
+
         pygame.display.flip()
         pygame_clock.tick(60)
-    
+
     pygame.quit()
