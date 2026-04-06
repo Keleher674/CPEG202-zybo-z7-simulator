@@ -55,7 +55,7 @@ If successful, the graphical Zybo board interface will launch, allowing you to i
 ## VHDL Structure & Naming Rules
 
 - **File Names:** You can name your `.vhd` files whatever you want. The compiler reads everything inside the `src/` folder and links it automatically.
-- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build [by default].
+- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build *(by default)*.
 
 ```vhdl
 entity top_level is
