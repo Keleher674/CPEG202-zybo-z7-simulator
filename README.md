@@ -55,7 +55,7 @@ If successful, the graphical Zybo board interface will launch, allowing you to i
 ## VHDL Structure & Naming Rules
 
 - **File Names:** You can name your `.vhd` files whatever you want. The compiler reads everything inside the `src/` folder and links it automatically.
-- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build *(by default)*.
+- **Top-Level Entity:** Your absolute top-level entity **must be named exactly `top_level`**. If it is named anything else, the simulation will fail to build _(by default)_.
 
 ```vhdl
 entity top_level is
@@ -153,7 +153,7 @@ python3 run_sim.py [arguments]
 | Short | Long Flag       | Default         | Description                                                        |
 | :---: | :-------------- | :-------------- | :----------------------------------------------------------------- |
 | `-p`  | `--path`        | `src`           | Path to a specific directory containing `.vhd` files.              |
-| `-e`  | `--entity`      | `top_level`     | Name of the top-level entity to simulate.                          |
+| `-e`  | `--entity`      | `top_level`     | Name of the top-level entity to simulate. (not for testbench)      |
 | `-t`  | `--test`        | `false`         | Run the testbench instead of the normal simulation.                |
 | `-ns` | `--no-sim`      | `false`         | Compile testbench and generate VCD file, do not run the simulation |
 | `-o`  | `--output-dir`  | `waveforms`     | Directory to store .vcd waveform files.                            |

@@ -103,8 +103,8 @@ def run_command(cmd, cwd=None, ignore_error=False):
 
 def tb(args: argparse.Namespace):
     # 1. Ask the student which testbench to run
-    print("Available Testbenches in src/:")
     src_dir = Path(args.path)
+    print(f"Available Testbenches in {src_dir.resolve().absolute()}:")
     tb_files = list(src_dir.rglob("*_tb.vhd"))
 
     if not tb_files:
@@ -126,7 +126,7 @@ def tb(args: argparse.Namespace):
 
     # 2. Analyze all VHDL files
     os.makedirs("build", exist_ok=True)
-    run_command("ghdl -a --workdir=build src/*.vhd")
+    run_command(f"ghdl -a --workdir=build {src_dir}/*.vhd")
 
     # 3. Elaborate the selected testbench
     run_command(f"ghdl -e --workdir=build {tb_name}")
