@@ -26,7 +26,3 @@ Thumbs.db
 
 # Ignore the local testing directory
 Test Files/
-
-# Ignore Poetry files
-poetry.lock
-pyproject.toml
