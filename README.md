@@ -132,8 +132,10 @@ When GTKWave opens, your signals will not be visible immediately.
 3. Click the **Append** button at the bottom to add them to the main waveform viewer.
 4. Use the magnifying glass icons at the top to zoom in and out of your time scale.
 
+<br>
+
 <details>
-<summary><b>Advanced Features</b> (Click to expand)</summary>
+<summary><h2>Advanced Features</h2> (Click to expand)</summary>
 
 ## Command Line Arguements
 
