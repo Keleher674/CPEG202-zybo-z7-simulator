@@ -131,3 +131,47 @@ When GTKWave opens, your signals will not be visible immediately.
 2. In the bottom-left window, highlight the signals you want to see.
 3. Click the **Append** button at the bottom to add them to the main waveform viewer.
 4. Use the magnifying glass icons at the top to zoom in and out of your time scale.
+
+<details>
+<summary><b>Advanced Features</b> (Click to expand)</summary>
+
+## Command Line Arguements
+
+You can customize the simulation run using various command-line flags.
+
+**Basic Usage:**
+
+```bash
+python3 run_sim.py [arguments]
+```
+
+**Available Arguments:**
+
+| Short | Long Flag  | Default     | Description                                           |
+| :---: | :--------- | :---------- | :---------------------------------------------------- |
+| `-p`  | `--path`   | `src`       | Path to a specific directory containing `.vhd` files. |
+| `-e`  | `--entity` | `top_level` | Name of the top-level entity to simulate.             |
+| `-h`  | `--help`   | `N/A`       | Shows the help menu and exits.                        |
+
+**Examples:**
+
+Run the simulation on the default directory:
+
+```bash
+python3 run_sim.py
+```
+
+Target a specific test directory with :
+
+```bash
+python3 run_sim.py --path="src1"
+```
+
+Use a differently named top-level entity:
+
+```bash
+python3 run_sim.py -e 'top_level2'
+```
+
+</details>
+```
