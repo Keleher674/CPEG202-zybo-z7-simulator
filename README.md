@@ -32,7 +32,7 @@ In VSCode, open the integrated terminal (`Terminal` -> `New Terminal`). Verify t
 ~~~bash
 # Update package lists and install the GHDL compiler and Python
 sudo apt update
-sudo apt install ghdl python3 python3-pip -y
+sudo apt install ghdl python3 python3-pip gtkwave -y
 
 # Install the required Python simulation libraries
 pip3 install cocotb pygame 
@@ -99,3 +99,27 @@ The simulator enforces strict hardware pin mapping for the 7-segment display.
 If you declare your output vector as `seg : out std_logic_vector(0 to 6)`, assigning `"1111110"` will map the leftmost '1' to index `0` (Top), resulting in a perfect '0' on the display. 
 
 **Warning:** If you declare your vector as `6 downto 0`, the leftmost bit of `"1111110"` now corresponds to index `6` (Middle). This will draw your numbers completely inside out and backwards! Pay close attention to your vector direction, as the simulator will mangle your display exactly the same way the physical FPGA would.
+
+## Running Testbenches & Viewing Waveforms
+
+If you are writing a standard VHDL testbench (a file that generates its own simulated inputs without the Pygame GUI), you can compile it and view the timing waveforms using GTKWave.
+
+1. Ensure your testbench file is in the `src/` folder and ends with `_tb.vhd` (e.g., `counter_tb.vhd`). 
+   * **Crucial Rule:** The entity name *inside* your testbench file must exactly match the filename. If your file is `counter_tb.vhd`, your code must declare `entity counter_tb is`.
+2. Open your terminal in the main project folder and run:
+   ```bash
+   python3 run_tb.py
+   ```
+3. Type the number corresponding to the testbench you want to run and press Enter.
+4. The script will compile your code and generate a `waveforms.vcd` file.
+5. To view the results, open the industry-standard GTKWave viewer by running:
+   ```bash
+   gtkwave waveforms.vcd &
+   ```
+
+**Using GTKWave:**
+When GTKWave opens, your signals will not be visible immediately. 
+1. In the top-left **SST** window, click on your testbench name (e.g., `top_level_tb`).
+2. In the bottom-left window, highlight the signals you want to see.
+3. Click the **Append** button at the bottom to add them to the main waveform viewer.
+4. Use the magnifying glass icons at the top to zoom in and out of your time scale.
