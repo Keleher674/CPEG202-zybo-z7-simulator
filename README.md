@@ -116,7 +116,7 @@ If you are writing a standard VHDL testbench (a file that generates its own simu
 2. Open your terminal in the main project folder and run:
 
    ```bash
-   python3 run.py --test
+   python3 run.py --test-bench
    ```
 
 3. Type the number corresponding to the testbench you want to run and press Enter.
@@ -154,7 +154,7 @@ python3 run_sim.py [arguments]
 | :---: | :-------------- | :-------------- | :----------------------------------------------------------------- |
 | `-p`  | `--path`        | `src`           | Path to a specific directory containing `.vhd` files.              |
 | `-e`  | `--entity`      | `top_level`     | Name of the top-level entity to simulate. (not for testbench)      |
-| `-t`  | `--test`        | `false`         | Run the testbench instead of the normal simulation.                |
+| `-tb` | `--test-bench`  | `false`         | Run the testbench instead of the normal simulation.                |
 | `-ns` | `--no-sim`      | `false`         | Compile testbench and generate VCD file, do not run the simulation |
 | `-o`  | `--output-dir`  | `waveforms`     | Directory to store .vcd waveform files.                            |
 | `-f`  | `--output-file` | `waveforms.vcd` | Name of the top-level entity to simulate.                          |
