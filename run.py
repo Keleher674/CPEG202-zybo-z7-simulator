@@ -31,8 +31,8 @@ def parse_arguments():
         help="Name of the top-level entity to simulate (default: 'top_level')",
     )
     parser.add_argument(
-        "-t",
-        "--test",
+        "-tb",
+        "--test-bench",
         action="store_true",
         help="Run the testbench instead of the normal simulation",
     )
@@ -82,6 +82,7 @@ def sim(args: argparse.Namespace):
         sources=sources,
         hdl_toplevel=top_level_entity,
         always=True,
+        build_args=["-fsynopsys"],
         clean=True,  # Automatically deletes and recreates sim_build
     )
 
@@ -160,8 +161,8 @@ def tb(args: argparse.Namespace):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    # If user runs with --test, run the testbench flow, otherwise run the normal sim flow
-    if args.test:
+    # If user runs with --test-bench, run the testbench flow, otherwise run the normal sim flow
+    if args.test_bench:
         tb(args)
     else:
         sim(args)
