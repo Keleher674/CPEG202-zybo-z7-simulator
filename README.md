@@ -116,12 +116,12 @@ If you are writing a standard VHDL testbench (a file that generates its own simu
 2. Open your terminal in the main project folder and run:
 
    ```bash
-   python3 run.py --test-bench
+   python3 run.py -tb
    ```
 
 3. Type the number corresponding to the testbench you want to run and press Enter.
 4. The script will compile your code and generate a `waveforms.vcd` file.
-5. To view the results, open the industry-standard GTKWave viewer by running:
+5. To view the results, the simulator automatically opens the industry-standard GTKWave viewer by running:
 
    ```bash
    gtkwave waveforms.vcd &
@@ -145,7 +145,7 @@ You can customize the simulation run using various command-line flags.
 **Basic Usage:**
 
 ```bash
-python3 run_sim.py [arguments]
+python3 run.py [arguments]
 ```
 
 **Available Arguments:**
@@ -165,19 +165,19 @@ python3 run_sim.py [arguments]
 Run the simulation on the default directory:
 
 ```bash
-python3 run_sim.py
+python3 run.py
 ```
 
 Target a specific test directory:
 
 ```bash
-python3 run_sim.py --path="src1"
+python3 run.py --path="src1"
 ```
 
 Use a differently named top-level entity:
 
 ```bash
-python3 run_sim.py -e 'top_level2'
+python3 run.py -e 'top_level2'
 ```
 
 </details>
